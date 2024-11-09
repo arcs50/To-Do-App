@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alert-manager-config  # Add a name for your ConfigMap
+  namespace: default         # (Optional) Specify the namespace if needed
+data:
+  alertmanager.yaml: |       # Specify the key that contains the configuration
+    global:
+      resolve_timeout: 5m
+
+    route:
+      group_by: ['alertname']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 3h
+      receiver: 'slack-notifier'
+
+    receivers:
+      - name: 'slack-notifier'
+        slack_configs:
+          - api_url: 'https://hooks.slack.com/services/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' 
+            channel: '#alerts'
+            text: "Alert: {{ .CommonAnnotations.summary }} \nDescription: {{ .CommonAnnotations.description }}"

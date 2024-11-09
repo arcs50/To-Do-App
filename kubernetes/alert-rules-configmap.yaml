@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-alert-rules
+  namespace: prometheus
+  labels:
+    role: alert-rules
+data:
+  alert.rules: |
+    groups:
+    - name: liveness-probes-alert
+      rules:
+      - alert: LivenessProbeFailure
+        expr: kube_pod_container_status_last_terminated_reason{reason="LivenessProbe"} > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Liveness Probe Failure Detected"
+          description: "Pod {{ $labels.pod }} has failed the liveness probe {{ $labels.container }}."
